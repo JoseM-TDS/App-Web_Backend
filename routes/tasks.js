@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const route = require('.');
 
 let tasks = [
     {
@@ -26,8 +25,13 @@ router.get('/getTasks', function(req, res, next) {
 
 router.delete('/deleteTask/:id', function(req, res, next) {
     const taskId = parseInt(req.params.id);
-    tasks = tasks.filter(task => task.id !== taskId);
-    res.json({ message: 'Task deleted successfully'});
+    const task = tasks.find(task => task.id !== taskId);
+    if(!task) {
+        return res.status(400).json({ message: 'Task not found'});
+    } else {
+        tasks = tasks.filter(task => task.id !== taskId);
+        res.status(200).json({ message: 'Task deleted successfully'});
+    }
 });
 
 router.post('/addTask', function(req, res, next) {
@@ -37,7 +41,7 @@ router.post('/addTask', function(req, res, next) {
         description: req.body.description
     };
     tasks.push(newTask);
-    req.json({ message: 'Task added successfully' });
+    req.status(200).json({ message: 'Task added successfully' });
 });
 
 module.exports = router;
