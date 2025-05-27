@@ -47,6 +47,14 @@ let queryCreateTableGoals = 'CREATE TABLE IF NOT EXISTS `goals` ( \
 PRIMARY KEY (`id`) \
 );'
 
+let queryCreateTableTasks = 'CREATE TABLE IF NOT EXISTS `tasks` ( \
+`id` int(12) NOT NULL auto_increment, \
+`name` varchar(250) NOT NULL default \'\', \
+`description` varchar(250) NOT NULL default \'\', \
+`date` varchar(250) NOT NULL default \'\', \
+PRIMARY KEY (`id`) \
+);'
+
 connection.query(queryCreateDB, function(err, results, fields) {
   if(err){
     console.error('Failed to create DB' + err);
@@ -58,6 +66,16 @@ connection.query(queryCreateDB, function(err, results, fields) {
 });
 
 connection.query(queryCreateTableGoals, function(err, results, fields) {
+  if(err){
+    console.error('Failde to create Table' + err);
+    return;
+  }else{
+    onsole.error('Results: ' + results);
+    console.error('Fields: ' + fields);
+  }
+});
+
+connection.query(queryCreateTableTasks, function(err, results, fields) {
   if(err){
     console.error('Failde to create Table' + err);
     return;
