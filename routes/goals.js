@@ -69,7 +69,7 @@ router.post('/addGoal', function(req, res, next) {
     if(req.body && req.body.name && req.body.description && req.body.date){
         let queryAddGoal = 'INSERT INTO goals (name, description, date \
         VALUES ("' + req.body.name + '", "' + req.body.description + '", "' + req.body.date + '");';
-        connection.query(queryDeleteGoal, function(err, results) {
+        connection.query(queryAddGoal, function(err, results) {
             if(err){
                 console.error('Failed to add goal' + err);
                 res.status(400).json(err);

@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var mysql = require('mysql');
 
 let tasks = [
     {
@@ -19,29 +20,66 @@ let tasks = [
     }
 ]
 
+// Connection with mysql
+var connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  database: 'mysql'
+});
+
+connection.connect(function(err) {
+  if(err){
+    console.error('Error connecting: ' + err.stack);
+    return;
+  }
+  
+  console.log('Connected as id: ' + connection.threadId);
+});
+
 router.get('/getTasks', function(req, res, next) {
-    res.json(tasks);
+    var queryGetTask = 'SELECT * FROM tasks';
+    connection.query(queryGetTask, function(err, results) {
+        if(err){
+            console.error('Failed to create task' + err);
+            res.status(500).json(err);
+        }else{
+            res.json(results);
+        }
+    });
 });
 
 router.delete('/deleteTask/:id', function(req, res, next) {
-    const taskId = parseInt(req.params.id);
-    const task = tasks.find(task => task.id !== taskId);
-    if(!task) {
-        return res.status(400).json({ message: 'Task not found'});
-    } else {
-        tasks = tasks.filter(task => task.id !== taskId);
-        res.status(200).json({ message: 'Task deleted successfully'});
+    if(req.params && req.params.id){
+        let id = req.params.id;
+        let queryDeleteTask = 'DELETE FROM tasks WHERE id="' + id + '"';
+        connection.query(queryDeleteTask, function(err, results) {
+            if(err){
+                console.error('Failed to delete task' + err);
+                res.status(500).json(err);
+            }else{
+                res.status(200).json(results);
+            }
+        });
+    }else { 
+        res.status(400).json({});
     }
 });
 
 router.post('/addTask', function(req, res, next) {
-    const newTask = {
-        id: tasks.length + 1,
-        name: req.body.name,
-        description: req.body.description
-    };
-    tasks.push(newTask);
-    req.status(200).json({ message: 'Task added successfully' });
+    if(req.body && req.body.name && req.body.description && req.body.date){
+        let queryAddTask = 'INSERT INTO tasks (name, description, date \
+        VALUES ("' + req.body.name + '", "' + req.body.description + '", "' + req.body.date + '");';
+        connection.query(queryAddTask, function(err, results) {
+            if(err){
+                console.error('Failed to add task' + err);
+                res.status(400).json(err);
+            }else{
+                res.status(200).json(results);
+            }
+        });
+    }else { 
+        res.status(400).json({});
+    }
 });
 
 module.exports = router;
