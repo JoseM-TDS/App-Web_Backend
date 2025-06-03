@@ -88,7 +88,7 @@ connection.destroy();
 
 // Middleware
 app.use((req, res, next) => {
-  if(req.headers.authorization && req.headers.authorization === '123'){
+  if(req.headers.authorization && req.headers.authorization === '123456'){
     next();
   }else {
     res.status(401).json({ message: 'Unathorized' });
